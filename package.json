@@ -1,4 +1,11 @@
-"scripts": {
-  "start": "webpack serve --mode development",
-  "build": "webpack --mode production"
+{
+  "name": "mesto-project",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production"
+  },
+  "dependencies": {
+    "json-server": "^0.17.0"
+  }
 }
