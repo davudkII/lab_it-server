@@ -1,0 +1,7 @@
+{
+  "homepage": "https://davudkII.github.io/lab_it-server",
+  "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  }
+}
