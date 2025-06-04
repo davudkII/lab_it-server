@@ -1,5 +1,5 @@
 const config = {
-  baseUrl: 'https://fine-nights-sleep.loca.lt',
+  baseUrl: 'https://server-16a3.onrender.com',
    headers: {
     'Authorization': 'Bearer c56e30dc-2883-4270-a59e-b2f7bae969c6',
     'Content-Type': 'application/json',
