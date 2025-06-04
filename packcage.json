@@ -1,7 +1,4 @@
-{
-  "homepage": "https://davudkII.github.io/lab_it-server",
-  "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
-  }
+"scripts": {
+  "start": "webpack serve --mode development",
+  "build": "webpack --mode production"
 }
