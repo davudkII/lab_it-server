@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
+  // Точка входа - основной JS файл, который импортирует все CSS
   entry: './scripts/index.js',
   
   output: {
@@ -35,7 +36,7 @@ module.exports = {
               importLoaders: 1,
               url: {
                 filter: (url) => {
-                  // Не обрабатываем абсолютные пути
+                  // Не обрабатываем абсолютные пути и data-URI
                   if (url.startsWith('/') || url.startsWith('data:')) {
                     return false;
                   }
@@ -71,7 +72,8 @@ module.exports = {
       inject: 'body'
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash].css', 
+      filename: 'css/[name].[contenthash].css',
+      chunkFilename: 'css/[id].[contenthash].css'
     }),
     new CopyWebpackPlugin({
       patterns: [
