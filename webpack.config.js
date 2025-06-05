@@ -3,18 +3,19 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'scripts', 'index.js'), // Изменили путь к точке входа
+  entry: path.resolve(__dirname, 'scripts', 'index.js'),
   
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'scripts/[name].[contenthash].js',
     publicPath: '/',
-    assetModuleFilename: 'images/[name][ext]'
+    assetModuleFilename: 'images/[name][ext]',
+    clean: true
   },
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'index.html'), // Изменили путь к шаблону
+      template: path.resolve(__dirname, 'index.html'),
       filename: 'index.html',
       inject: 'body'
     }),
@@ -28,7 +29,7 @@ module.exports = {
         {
           from: path.resolve(__dirname, 'vendor'),
           to: 'vendor',
-          noErrorOnMissing: true // Добавили на случай отсутствия папки
+          noErrorOnMissing: true
         }
       ]
     })
@@ -78,5 +79,31 @@ module.exports = {
       '@images': path.resolve(__dirname, 'images'),
       '@scripts': path.resolve(__dirname, 'scripts')
     }
+  },
+
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    compress: true,
+    port: process.env.PORT || 8080,
+    host: '0.0.0.0',
+    allowedHosts: 'all',
+    historyApiFallback: true,
+    client: {
+      overlay: {
+        errors: true,
+        warnings: false,
+      },
+      webSocketURL: 'auto://0.0.0.0:0/ws'
+    },
+    hot: true,
+    open: false
+  },
+
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
   }
 };
