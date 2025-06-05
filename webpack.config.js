@@ -4,14 +4,18 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  // Точка входа - основной JS файл, который импортирует все CSS
-  entry: './scripts/index.js',
+  mode: 'production',
+  entry: {
+    main: './scripts/index.js',
+    styles: './pages/index.css'
+  },
   
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash].js',
     publicPath: '/',
-    clean: true
+    clean: true,
+    assetModuleFilename: 'assets/[hash][ext][query]'
   },
 
   module: {
@@ -29,14 +33,18 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              publicPath: '../'
+            }
+          },
           {
             loader: 'css-loader',
             options: {
               importLoaders: 1,
               url: {
                 filter: (url) => {
-                  // Не обрабатываем абсолютные пути и data-URI
                   if (url.startsWith('/') || url.startsWith('data:')) {
                     return false;
                   }
@@ -69,7 +77,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html',
       filename: 'index.html',
-      inject: 'body'
+      inject: 'body',
+      minify: {
+        collapseWhitespace: true,
+        removeComments: true,
+        removeRedundantAttributes: true
+      }
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash].css',
@@ -79,12 +92,20 @@ module.exports = {
       patterns: [
         {
           from: 'images',
-          to: 'images',
-          noErrorOnMissing: true
+          to: 'images/[name][ext]',
+          noErrorOnMissing: true,
+          globOptions: {
+            ignore: ['**/.DS_Store']
+          }
         },
         {
           from: 'vendor',
-          to: 'vendor',
+          to: 'vendor/[name][ext]',
+          noErrorOnMissing: true
+        },
+        {
+          from: 'blocks/**/*.css',
+          to: 'blocks/[name][ext]',
           noErrorOnMissing: true
         }
       ]
@@ -98,14 +119,36 @@ module.exports = {
     compress: true,
     port: process.env.PORT || 8080,
     hot: true,
-    historyApiFallback: true,
+    historyApiFallback: {
+      index: '/',
+      disableDotRule: true
+    },
     allowedHosts: 'all',
     client: {
       overlay: {
         errors: true,
         warnings: false,
       },
+      logging: 'error'
     },
+    devMiddleware: {
+      writeToDisk: true
+    }
+  },
+
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true
+        }
+      }
+    },
+    runtimeChunk: 'single'
   },
 
   performance: {
