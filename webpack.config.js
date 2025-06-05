@@ -71,7 +71,7 @@ module.exports = {
       inject: 'body'
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash].css'
+      filename: 'css/[name].[contenthash].css', 
     }),
     new CopyWebpackPlugin({
       patterns: [
