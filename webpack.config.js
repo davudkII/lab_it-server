@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'src', 'pages', 'index.js'), // Точка входа
+  entry: path.resolve(__dirname, 'scripts', 'index.js'), // Изменили путь к точке входа
   
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -14,20 +14,21 @@ module.exports = {
 
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'src', 'index.html'),
+      template: path.resolve(__dirname, 'index.html'), // Изменили путь к шаблону
       filename: 'index.html',
       inject: 'body'
     }),
     new CopyWebpackPlugin({
       patterns: [
         { 
-          from: path.resolve(__dirname, 'src', 'images'), 
+          from: path.resolve(__dirname, 'images'), 
           to: 'images',
           noErrorOnMissing: true
         },
         {
-          from: path.resolve(__dirname, 'src', 'vendor'),
-          to: 'vendor'
+          from: path.resolve(__dirname, 'vendor'),
+          to: 'vendor',
+          noErrorOnMissing: true // Добавили на случай отсутствия папки
         }
       ]
     })
@@ -74,9 +75,8 @@ module.exports = {
 
   resolve: {
     alias: {
-      '@images': path.resolve(__dirname, 'src', 'images'),
-      '@scripts': path.resolve(__dirname, 'src', 'scripts'),
-      '@pages': path.resolve(__dirname, 'src', 'pages')
+      '@images': path.resolve(__dirname, 'images'),
+      '@scripts': path.resolve(__dirname, 'scripts')
     }
   }
 };
