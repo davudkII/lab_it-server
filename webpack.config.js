@@ -4,7 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  mode: 'production',
   entry: {
     main: './scripts/index.js',
     styles: './pages/index.css'
@@ -14,8 +13,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'js/[name].[contenthash].js',
     publicPath: '/',
-    clean: true,
-    assetModuleFilename: 'assets/[hash][ext][query]'
+    clean: true
   },
 
   module: {
@@ -33,27 +31,21 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../'
-            }
-          },
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
-              importLoaders: 1,
-              url: {
-                filter: (url) => {
-                  if (url.startsWith('/') || url.startsWith('data:')) {
-                    return false;
-                  }
-                  return true;
-                }
-              }
+              importLoaders: 1
             }
           },
-          'postcss-loader'
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                config: true
+              }
+            }
+          }
         ]
       },
       {
@@ -77,37 +69,15 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './index.html',
       filename: 'index.html',
-      inject: 'body',
-      minify: {
-        collapseWhitespace: true,
-        removeComments: true,
-        removeRedundantAttributes: true
-      }
+      inject: 'body'
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/[name].[contenthash].css',
-      chunkFilename: 'css/[id].[contenthash].css'
+      filename: 'css/[name].[contenthash].css'
     }),
     new CopyWebpackPlugin({
       patterns: [
-        {
-          from: 'images',
-          to: 'images/[name][ext]',
-          noErrorOnMissing: true,
-          globOptions: {
-            ignore: ['**/.DS_Store']
-          }
-        },
-        {
-          from: 'vendor',
-          to: 'vendor/[name][ext]',
-          noErrorOnMissing: true
-        },
-        {
-          from: 'blocks/**/*.css',
-          to: 'blocks/[name][ext]',
-          noErrorOnMissing: true
-        }
+        { from: 'images', to: 'images' },
+        { from: 'vendor', to: 'vendor' }
       ]
     })
   ],
@@ -119,41 +89,6 @@ module.exports = {
     compress: true,
     port: process.env.PORT || 8080,
     hot: true,
-    historyApiFallback: {
-      index: '/',
-      disableDotRule: true
-    },
-    allowedHosts: 'all',
-    client: {
-      overlay: {
-        errors: true,
-        warnings: false,
-      },
-      logging: 'error'
-    },
-    devMiddleware: {
-      writeToDisk: true
-    }
-  },
-
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      cacheGroups: {
-        styles: {
-          name: 'styles',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true
-        }
-      }
-    },
-    runtimeChunk: 'single'
-  },
-
-  performance: {
-    hints: false,
-    maxEntrypointSize: 512000,
-    maxAssetSize: 512000
+    historyApiFallback: true
   }
 };
