@@ -1,44 +1,17 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: path.resolve(__dirname, 'scripts', 'index.js'),
-
+  entry: './scripts/index.js',
+  
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'scripts/[name].[contenthash].js',
+    filename: 'js/[name].[contenthash].js',
     publicPath: '/',
-    assetModuleFilename: 'images/[name][ext]',
     clean: true
   },
-
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'index.html'),
-      filename: 'index.html',
-      inject: 'body'
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        { 
-          from: path.resolve(__dirname, 'images'), 
-          to: 'images',
-          noErrorOnMissing: true
-        },
-        {
-          from: path.resolve(__dirname, 'vendor', 'fonts'),
-          to: 'fonts',
-          noErrorOnMissing: true
-        }
-      ]
-    }),
-    new MiniCssExtractPlugin({
-      filename: 'styles/[name].[contenthash].css',
-      chunkFilename: 'styles/[id].[contenthash].css'
-    })
-  ],
 
   module: {
     rules: [
@@ -55,19 +28,14 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../' // Корректирует пути к изображениям в CSS
-            }
-          },
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
             options: {
               importLoaders: 1,
               url: {
                 filter: (url) => {
-                  // Не обрабатываем абсолютные пути и данные URI
+                  // Не обрабатываем абсолютные пути
                   if (url.startsWith('/') || url.startsWith('data:')) {
                     return false;
                   }
@@ -76,12 +44,7 @@ module.exports = {
               }
             }
           },
-          'postcss-loader' // Добавлен PostCSS
-        ],
-        include: [
-          path.resolve(__dirname, 'pages'), // Главный index.css
-          path.resolve(__dirname, 'blocks'), // BEM-блоки
-          path.resolve(__dirname, 'vendor') // normalize.css
+          'postcss-loader'
         ]
       },
       {
@@ -101,13 +64,30 @@ module.exports = {
     ]
   },
 
-  resolve: {
-    alias: {
-      '@images': path.resolve(__dirname, 'images'),
-      '@scripts': path.resolve(__dirname, 'scripts'),
-      '@styles': path.resolve(__dirname, 'pages') // Для импорта index.css
-    }
-  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      filename: 'index.html',
+      inject: 'body'
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'css/[name].[contenthash].css'
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'images',
+          to: 'images',
+          noErrorOnMissing: true
+        },
+        {
+          from: 'vendor',
+          to: 'vendor',
+          noErrorOnMissing: true
+        }
+      ]
+    })
+  ],
 
   devServer: {
     static: {
