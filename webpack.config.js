@@ -28,14 +28,15 @@ module.exports = {
           noErrorOnMissing: true
         },
         {
-          from: path.resolve(__dirname, 'vendor'),
-          to: 'vendor',
+          from: path.resolve(__dirname, 'vendor', 'fonts'),
+          to: 'fonts',
           noErrorOnMissing: true
         }
       ]
     }),
     new MiniCssExtractPlugin({
-      filename: 'styles/[name].[contenthash].css'
+      filename: 'styles/[name].[contenthash].css',
+      chunkFilename: 'styles/[id].[contenthash].css'
     })
   ],
 
@@ -54,21 +55,33 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
           {
-            loader: 'postcss-loader',
+            loader: MiniCssExtractPlugin.loader,
             options: {
-              postcssOptions: {
-                config: true
+              publicPath: '../' // Корректирует пути к изображениям в CSS
+            }
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+              url: {
+                filter: (url) => {
+                  // Не обрабатываем абсолютные пути и данные URI
+                  if (url.startsWith('/') || url.startsWith('data:')) {
+                    return false;
+                  }
+                  return true;
+                }
               }
             }
-          }
+          },
+          'postcss-loader' // Добавлен PostCSS
         ],
         include: [
-          path.resolve(__dirname, 'blocks'),
-          path.resolve(__dirname, 'pages'),
-          path.resolve(__dirname, 'vendor')
+          path.resolve(__dirname, 'pages'), // Главный index.css
+          path.resolve(__dirname, 'blocks'), // BEM-блоки
+          path.resolve(__dirname, 'vendor') // normalize.css
         ]
       },
       {
@@ -92,7 +105,7 @@ module.exports = {
     alias: {
       '@images': path.resolve(__dirname, 'images'),
       '@scripts': path.resolve(__dirname, 'scripts'),
-      '@styles': path.resolve(__dirname, 'blocks')
+      '@styles': path.resolve(__dirname, 'pages') // Для импорта index.css
     }
   },
 
