@@ -1,10 +1,11 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: path.resolve(__dirname, 'scripts', 'index.js'),
-  
+
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'scripts/[name].[contenthash].js',
@@ -32,6 +33,9 @@ module.exports = {
           noErrorOnMissing: true
         }
       ]
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'styles/[name].[contenthash].css'
     })
   ],
 
@@ -50,22 +54,32 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
+          'css-loader',
           {
-            loader: 'css-loader',
+            loader: 'postcss-loader',
             options: {
-              importLoaders: 1
+              postcssOptions: {
+                config: true
+              }
             }
-          },
-          'postcss-loader'
+          }
+        ],
+        include: [
+          path.resolve(__dirname, 'blocks'),
+          path.resolve(__dirname, 'pages'),
+          path.resolve(__dirname, 'vendor')
         ]
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/,
-        type: 'asset/resource'
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]'
+        }
       },
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
         generator: {
           filename: 'fonts/[name][ext]'
@@ -77,28 +91,26 @@ module.exports = {
   resolve: {
     alias: {
       '@images': path.resolve(__dirname, 'images'),
-      '@scripts': path.resolve(__dirname, 'scripts')
+      '@scripts': path.resolve(__dirname, 'scripts'),
+      '@styles': path.resolve(__dirname, 'blocks')
     }
   },
 
   devServer: {
     static: {
-      directory: path.join(__dirname, 'public'),
+      directory: path.join(__dirname, 'dist'),
     },
     compress: true,
     port: process.env.PORT || 8080,
-    host: '0.0.0.0',
-    allowedHosts: 'all',
+    hot: true,
     historyApiFallback: true,
+    allowedHosts: 'all',
     client: {
       overlay: {
         errors: true,
         warnings: false,
       },
-      webSocketURL: 'auto://0.0.0.0:0/ws'
     },
-    hot: true,
-    open: false
   },
 
   performance: {
