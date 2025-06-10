@@ -239,12 +239,14 @@ async function handleDeleteClick(cardId, cardElement) {
 }
 
 function openImagePopup(link, name) {
-  const popupImage = popups.image.querySelector('.popup__image');
-  const popupCaption = popups.image.querySelector('.popup__caption');
+  const popupImage = imagePopup.querySelector('.popup__image');
+  const popupCaption = imagePopup.querySelector('.popup__caption');
+  
   popupImage.src = link;
   popupImage.alt = name;
   popupCaption.textContent = name;
-  openModal(popups.image);
+  
+  openModal(imagePopup);
 }
 
 // Обработчики форм
