@@ -245,7 +245,7 @@ function openImagePopup(link, name) {
   popupImage.alt = name;
   popupCaption.textContent = name;
   openModal(popups.image);
-}}
+}
 
 // Обработчики форм
 async function handleProfileFormSubmit(evt) {
